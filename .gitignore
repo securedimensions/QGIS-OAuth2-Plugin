@@ -1,0 +1,10 @@
+~*
+build_*/
+scripts
+*.prepare
+astyle.*.diff
+sha-*.diff
+*.sortinc
+*.zip
+diffs
+oauth2-test-app/images

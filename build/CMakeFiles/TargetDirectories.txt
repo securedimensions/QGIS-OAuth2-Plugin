@@ -1,0 +1,8 @@
+C:/qgis-oauth-cxxplugin-master/build/CMakeFiles/INSTALL.dir
+C:/qgis-oauth-cxxplugin-master/build/CMakeFiles/ALL_BUILD.dir
+C:/qgis-oauth-cxxplugin-master/build/CMakeFiles/ZERO_CHECK.dir
+C:/qgis-oauth-cxxplugin-master/build/oauth2/CMakeFiles/oauth2authmethod.dir
+C:/qgis-oauth-cxxplugin-master/build/oauth2/CMakeFiles/INSTALL.dir
+C:/qgis-oauth-cxxplugin-master/build/oauth2/CMakeFiles/oauth2authmethod_static.dir
+C:/qgis-oauth-cxxplugin-master/build/test/CMakeFiles/qgis_authoauth2configtest.dir
+C:/qgis-oauth-cxxplugin-master/build/test/CMakeFiles/INSTALL.dir
