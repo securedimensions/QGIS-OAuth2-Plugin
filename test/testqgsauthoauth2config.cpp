@@ -152,7 +152,7 @@ QgsAuthOAuth2Config *TestQgsAuthOAuth2Config::baseConfig( bool loaded )
     config->setUsername( "myusername" );
     config->setPassword( "mypassword" );
     config->setScope( "scope_1 scope_2 scope_3" );
-    config->setState( "somestate" );
+    //config->setState( "somestate" );
     config->setApiKey( "someapikey" );
     config->setPersistToken( false );
     config->setAccessMethod( QgsAuthOAuth2Config::Header );

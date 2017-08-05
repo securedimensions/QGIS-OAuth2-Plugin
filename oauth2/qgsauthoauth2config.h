@@ -136,8 +136,8 @@ class QgsAuthOAuth2Config : public QObject
     QString scope() const { return mScope; }
 
     //! State passed with request
-    Q_PROPERTY( QString state READ state WRITE setState NOTIFY stateChanged )
-    QString state() const { return mState; }
+    //Q_PROPERTY( QString state READ state WRITE setState NOTIFY stateChanged )
+    //QString state() const { return mState; }
 
     //!
     Q_PROPERTY( QString apiKey READ apiKey WRITE setApiKey NOTIFY apiKeyChanged )
@@ -255,7 +255,7 @@ class QgsAuthOAuth2Config : public QObject
     void setUsername( const QString &value );
     void setPassword( const QString &value );
     void setScope( const QString &value );
-    void setState( const QString &value );
+    //void setState( const QString &value );
     void setApiKey( const QString &value );
     // advanced
     void setPersistToken( bool persist );
@@ -285,7 +285,7 @@ class QgsAuthOAuth2Config : public QObject
     void usernameChanged( const QString & );
     void passwordChanged( const QString & );
     void scopeChanged( const QString & );
-    void stateChanged( const QString & );
+    //void stateChanged( const QString & );
     void apiKeyChanged( const QString & );
 
     // advanced
@@ -313,7 +313,7 @@ class QgsAuthOAuth2Config : public QObject
     QString mUsername;
     QString mPassword;
     QString mScope;
-    QString mState;
+    //QString mState;
     QString mApiKey;
     bool mPersistToken;
     AccessMethod mAccessMethod;

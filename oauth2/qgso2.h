@@ -37,8 +37,26 @@ class QgsO2: public O2
     QString authcfg() const { return mAuthcfg; }
     QgsAuthOAuth2Config *oauth2config() { return mOAuth2Config; }
 
+    Q_PROPERTY(QString state READ state WRITE setState NOTIFY stateChanged)
+    QString state();
+    void setState(const QString &value);
+
   public slots:
     void clearProperties();
+
+  public Q_SLOTS:
+	/// Authenticate.
+    void link() override;
+
+  protected:
+  	QString state_;
+  
+  protected Q_SLOTS:
+    /// Handle verification response.
+    void onVerificationReceived(QMap<QString, QString>) override;
+
+  Q_SIGNALS:
+	void stateChanged();
 
   private:
     void initOAuthConfig();

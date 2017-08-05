@@ -1,5 +1,5 @@
 ~*
-build_*/
+build/
 scripts
 *.prepare
 astyle.*.diff

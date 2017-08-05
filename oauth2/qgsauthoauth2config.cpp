@@ -54,7 +54,7 @@ QgsAuthOAuth2Config::QgsAuthOAuth2Config( QObject *parent )
   connect( this, SIGNAL( usernameChanged( const QString & ) ), this, SIGNAL( configChanged() ) );
   connect( this, SIGNAL( passwordChanged( const QString & ) ), this, SIGNAL( configChanged() ) );
   connect( this, SIGNAL( scopeChanged( const QString & ) ), this, SIGNAL( configChanged() ) );
-  connect( this, SIGNAL( stateChanged( const QString & ) ), this, SIGNAL( configChanged() ) );
+  //connect( this, SIGNAL( stateChanged( const QString & ) ), this, SIGNAL( configChanged() ) );
   connect( this, SIGNAL( apiKeyChanged( const QString & ) ), this, SIGNAL( configChanged() ) );
   connect( this, SIGNAL( persistTokenChanged( bool ) ), this, SIGNAL( configChanged() ) );
   connect( this, SIGNAL( accessMethodChanged( AccessMethod ) ), this, SIGNAL( configChanged() ) );
@@ -81,7 +81,7 @@ QgsAuthOAuth2Config::QgsAuthOAuth2Config( QObject *parent )
   connect( this, &QgsAuthOAuth2Config::usernameChanged, this, &QgsAuthOAuth2Config::configChanged );
   connect( this, &QgsAuthOAuth2Config::passwordChanged, this, &QgsAuthOAuth2Config::configChanged );
   connect( this, &QgsAuthOAuth2Config::scopeChanged, this, &QgsAuthOAuth2Config::configChanged );
-  connect( this, &QgsAuthOAuth2Config::stateChanged, this, &QgsAuthOAuth2Config::configChanged );
+  //connect( this, &QgsAuthOAuth2Config::stateChanged, this, &QgsAuthOAuth2Config::configChanged );
   connect( this, &QgsAuthOAuth2Config::apiKeyChanged, this, &QgsAuthOAuth2Config::configChanged );
   connect( this, &QgsAuthOAuth2Config::persistTokenChanged, this, &QgsAuthOAuth2Config::configChanged );
   connect( this, &QgsAuthOAuth2Config::accessMethodChanged, this, &QgsAuthOAuth2Config::configChanged );
@@ -212,12 +212,12 @@ void QgsAuthOAuth2Config::setScope( const QString &value )
   if ( preval != value ) emit scopeChanged( mScope );
 }
 
-void QgsAuthOAuth2Config::setState( const QString &value )
-{
-  QString preval( mState );
-  mState = value;
-  if ( preval != value ) emit stateChanged( mState );
-}
+//void QgsAuthOAuth2Config::setState( const QString &value )
+//{
+//  QString preval( mState );
+//  mState = value;
+//  if ( preval != value ) emit stateChanged( mState );
+//}
 
 void QgsAuthOAuth2Config::setApiKey( const QString &value )
 {
@@ -272,7 +272,7 @@ void QgsAuthOAuth2Config::setToDefaults()
   setUsername( QString::null );
   setPassword( QString::null );
   setScope( QString::null );
-  setState( QString::null );
+  //setState( QString::null );
   setApiKey( QString::null );
   setPersistToken( false );
   setAccessMethod( QgsAuthOAuth2Config::Header );
@@ -297,7 +297,7 @@ bool QgsAuthOAuth2Config::operator==( const QgsAuthOAuth2Config &other ) const
            && other.username() == this->username()
            && other.password() == this->password()
            && other.scope() == this->scope()
-           && other.state() == this->state()
+           //&& other.state() == this->state()
            && other.apiKey() == this->apiKey()
            && other.persistToken() == this->persistToken()
            && other.accessMethod() == this->accessMethod()
@@ -422,7 +422,7 @@ QVariantMap QgsAuthOAuth2Config::mappedProperties() const
   vmap.insert( QStringLiteral( "requestTimeout" ), this->requestTimeout() );
   vmap.insert( QStringLiteral( "requestUrl" ), this->requestUrl() );
   vmap.insert( QStringLiteral( "scope" ), this->scope() );
-  vmap.insert( QStringLiteral( "state" ), this->state() );
+  //vmap.insert( QStringLiteral( "state" ), this->state() );
   vmap.insert( QStringLiteral( "tokenUrl" ), this->tokenUrl() );
   vmap.insert( QStringLiteral( "username" ), this->username() );
   vmap.insert( QStringLiteral( "version" ), this->version() );

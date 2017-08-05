@@ -194,8 +194,6 @@ void QgsAuthOAuth2Edit::setupConnections()
            mOAuthConfigCustom, SLOT( setPassword( const QString & ) ) );
   connect( leScope, SIGNAL( textChanged( const QString & ) ),
            mOAuthConfigCustom, SLOT( setScope( const QString & ) ) );
-  connect( leState, SIGNAL( textChanged( const QString & ) ),
-           mOAuthConfigCustom, SLOT( setState( const QString & ) ) );
   connect( leApiKey, SIGNAL( textChanged( const QString & ) ),
            mOAuthConfigCustom, SLOT( setApiKey( const QString & ) ) );
   connect( chkbxTokenPersist, SIGNAL( toggled( bool ) ),
@@ -245,7 +243,6 @@ void QgsAuthOAuth2Edit::setupConnections()
   connect( leUsername, &QLineEdit::textChanged, mOAuthConfigCustom, &QgsAuthOAuth2Config::setUsername );
   connect( lePassword, &QgsPasswordLineEdit::textChanged, mOAuthConfigCustom, &QgsAuthOAuth2Config::setPassword );
   connect( leScope, &QLineEdit::textChanged, mOAuthConfigCustom, &QgsAuthOAuth2Config::setScope );
-  connect( leState, &QLineEdit::textChanged, mOAuthConfigCustom, &QgsAuthOAuth2Config::setState );
   connect( leApiKey, &QLineEdit::textChanged, mOAuthConfigCustom, &QgsAuthOAuth2Config::setApiKey );
   connect( chkbxTokenPersist, &QCheckBox::toggled, mOAuthConfigCustom, &QgsAuthOAuth2Config::setPersistToken );
   connect( cmbbxAccessMethod, static_cast<void ( QComboBox::* )( int )>( &QComboBox::currentIndexChanged ),
@@ -465,7 +462,6 @@ void QgsAuthOAuth2Edit::loadFromOAuthConfig( const QgsAuthOAuth2Config *config )
     leUsername->setText( config->username() );
     lePassword->setText( config->password() );
     leScope->setText( config->scope() );
-    leState->setText( config->state() );
     leApiKey->setText( config->apiKey() );
 
     // advanced
