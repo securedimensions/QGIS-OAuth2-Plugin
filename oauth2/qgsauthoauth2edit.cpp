@@ -761,6 +761,11 @@ bool QgsAuthOAuth2Edit::onDefinedTab() const
   return mCurTab == definedTab();
 }
 
+bool QgsAuthOAuth2Edit::onStatementTab() const
+{
+	return mCurTab == statementTab();
+}
+
 // slot
 void QgsAuthOAuth2Edit::updateGrantFlow( int indx )
 {

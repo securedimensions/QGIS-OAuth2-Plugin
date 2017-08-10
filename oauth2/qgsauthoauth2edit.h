@@ -100,8 +100,10 @@ class QgsAuthOAuth2Edit : public QgsAuthMethodEdit, private Ui::QgsAuthOAuth2Edi
 
     int customTab() const { return 0; }
     int definedTab() const { return 1; }
+	int statementTab() const { return 2; }
     bool onCustomTab() const;
     bool onDefinedTab() const;
+	bool onStatementTab() const;
 
     QString currentDefinedConfig() const { return mDefinedId; }
 
