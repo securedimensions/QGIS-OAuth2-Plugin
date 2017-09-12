@@ -16,6 +16,8 @@
 #define QGSAUTHOAUTH2EDIT_H
 
 #include <QWidget>
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
 #include "qgsauthmethodedit.h"
 #include "ui_qgsauthoauth2edit.h"
 
@@ -80,11 +82,25 @@ class QgsAuthOAuth2Edit : public QgsAuthMethodEdit, private Ui::QgsAuthOAuth2Edi
     void tabIndexChanged( int indx );
 
     void definedCustomDirChanged( const QString &path );
+	void softStatementDirChanged( const QString &path );
 
     void getDefinedCustomDir();
+	void getSoftStatementDir();
+
+	void registerSoftStatement(const QString& registrationUrl);
+	void getSoftConfig();
+	
+	void onConfigReplyFinished();
+	void onNetworkError(QNetworkReply::NetworkError error);
+	void onRegisterReplyFinished();
+
+  Q_SIGNALS:
+	void configSucceeded(const QString& registrationUrl);
+
 
   private:
     void initGui();
+	void parseSoftwareStatement(const QString& path);
 
     QWidget *parentWidget() const;
     QLineEdit *parentNameField() const;
@@ -116,6 +132,7 @@ class QgsAuthOAuth2Edit : public QgsAuthMethodEdit, private Ui::QgsAuthOAuth2Edi
     int mCurTab;
     bool mPrevPersistToken;
     QToolButton *btnTokenClear;
+	QNetworkAccessManager *mNetworkManager;
 };
 
 #endif // QGSAUTHOAUTH2EDIT_H

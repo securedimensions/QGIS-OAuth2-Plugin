@@ -17,11 +17,13 @@
 
 #include <QDir>
 #include <QFileDialog>
+#include <QNetworkRequest>
 
 #include "qgsauthguiutils.h"
 #include "qgsauthmanager.h"
 #include "qgsauthconfigedit.h"
 #include "qgslogger.h"
+#include "qjsonwrapper/Json.h"
 
 
 QgsAuthOAuth2Edit::QgsAuthOAuth2Edit( QWidget *parent )
@@ -163,11 +165,19 @@ void QgsAuthOAuth2Edit::setupConnections()
 
   connect( lstwdgDefinedConfigs, SIGNAL( currentItemChanged( QListWidgetItem *, QListWidgetItem * ) ),
            this, SLOT( currentDefinedItemChanged( QListWidgetItem *, QListWidgetItem * ) ) );
-
+  //JSV add this to #else too
   connect( btnGetDefinedDirPath, SIGNAL( clicked() ),
            this, SLOT( getDefinedCustomDir() ) );
   connect( leDefinedDirPath, SIGNAL( textChanged( const QString & ) ),
            this, SLOT( definedCustomDirChanged( const QString & ) ) );
+  connect( btnSoftStatementDir, SIGNAL( clicked() ),
+	  this, SLOT( getSoftStatementDir() ) );
+  connect( leSoftStatementDir, SIGNAL( textChanged( const QString & ) ),
+	  this, SLOT( softStatementDirChanged( const QString & ) ) );
+
+  connect( btnRegister, SIGNAL( clicked() ), this, SLOT( getSoftConfig() ) );
+
+  connect( this, SIGNAL( configSucceeded(QString&) ), this, SLOT( registerSoftStatement(QString&) ) );
 
   // Custom config editing connections
   connect( cmbbxGrantFlow, SIGNAL( currentIndexChanged( int ) ),
@@ -227,6 +237,13 @@ void QgsAuthOAuth2Edit::setupConnections()
 
   connect( btnGetDefinedDirPath, &QToolButton::clicked, this, &QgsAuthOAuth2Edit::getDefinedCustomDir );
   connect( leDefinedDirPath, &QLineEdit::textChanged, this, &QgsAuthOAuth2Edit::definedCustomDirChanged );
+
+  connect( btnSoftStatementDir, &QToolButton::clicked, this, &QgsAuthOAuth2Edit::getSoftStatementDir );
+  connect( leSoftStatementDir, &QLineEdit::textChanged,this, &QgsAuthOAuth2Edit::softStatementDirChanged );
+  connect( btnRegister, &QPushButton::clicked, this, &QgsAuthOAuth2Edit::getSoftConfig );
+ 
+  connect( this, &QgsAuthOAuth2Edit::configSucceeded, this, &QgsAuthOAuth2Edit::registerSoftStatement );
+
 
   // Custom config editing connections
   connect( cmbbxGrantFlow, static_cast<void ( QComboBox::* )( int )>( &QComboBox::currentIndexChanged ),
@@ -577,6 +594,20 @@ void QgsAuthOAuth2Edit::definedCustomDirChanged( const QString &path )
   }
 }
 
+
+void QgsAuthOAuth2Edit::softStatementDirChanged( const QString &path )
+{
+  QFileInfo pinfo( path );
+  bool ok = pinfo.exists() || pinfo.isFile();
+
+  leSoftStatementDir->setStyleSheet( ok ? "" : QgsAuthGuiUtils::redTextStyleSheet() );
+
+  if ( ok )
+  {
+	  parseSoftwareStatement( path );
+  }
+}
+
 // slot
 void QgsAuthOAuth2Edit::setCurrentDefinedConfig( const QString &id )
 {
@@ -640,17 +671,34 @@ void QgsAuthOAuth2Edit::getDefinedCustomDir()
   leDefinedDirPath->setText( extradir );
 }
 
+void QgsAuthOAuth2Edit::getSoftStatementDir()
+{
+  QString softStatementFile = QFileDialog::getOpenFileName( this, tr( "Select software statement file" ),
+                     QDir::homePath(), tr( "JSON Web Token (*.jwt)") );
+  this->raise();
+  this->activateWindow();
+
+  if ( softStatementFile.isNull() )
+  {
+    return;
+  }
+  leSoftStatementDir->setText( softStatementFile );
+}
+
 void QgsAuthOAuth2Edit::initConfigObjs()
 {
   mOAuthConfigCustom = new QgsAuthOAuth2Config( this );
   mOAuthConfigCustom->setConfigType( QgsAuthOAuth2Config::Custom );
   mOAuthConfigCustom->setToDefaults();
+  mNetworkManager = new QNetworkAccessManager(this);
 }
 
 void QgsAuthOAuth2Edit::deleteConfigObjs()
 {
   delete mOAuthConfigCustom;
   mOAuthConfigCustom = nullptr;
+  delete mNetworkManager;
+  mNetworkManager = nullptr;
 }
 
 bool QgsAuthOAuth2Edit::hasTokenCacheFile()
@@ -999,3 +1047,135 @@ void QgsAuthOAuth2Edit::clearQueryPairs()
     tblwdgQueryPairs->removeRow( i - 1 );
   }
 }
+
+void QgsAuthOAuth2Edit::parseSoftwareStatement(const QString& path)
+{
+	//JSV todo
+	//change grant flow
+	//"password"-->resource owner->index 2
+	//"authorization_code"-->...->index 0
+	QFile file(path);
+	QByteArray softwareStatementBase64;
+	if(file.open(QIODevice::ReadOnly | QIODevice::Text))
+	{
+		softwareStatementBase64=file.readAll();
+	}
+	if(softwareStatementBase64.isEmpty())
+	{
+		//print error
+		return;
+	}
+	file.close();
+	QByteArray payload=softwareStatementBase64.split('.')[1];
+	QByteArray decoded=QByteArray::fromBase64(payload/*, QByteArray::Base64UrlEncoding*/);
+	QByteArray errStr;
+	bool res = false;
+	QVariant jsonData = QJsonWrapper::parseJson(payload, &res, &errStr);
+	qDebug()<<jsonData.isValid();
+	
+	if ( !res )
+	{
+		QgsDebugMsg( QStringLiteral( "Error parsing JSON: %1" ).arg( QString( errStr ) ) );
+		return;
+	}
+	qDebug()<<jsonData;
+	
+	QgsDebugMsg( QStringLiteral( "Here is the JSON: %1" ).arg( QString( jsonData.toString() ) ) );
+}
+
+void QgsAuthOAuth2Edit::onConfigReplyFinished()
+{
+	qDebug() << "QgsAuthOAuth2Edit::onConfigReplyFinished";
+    QNetworkReply *configReply = qobject_cast<QNetworkReply *>(sender());
+    if (configReply->error() == QNetworkReply::NoError)
+	{
+        QByteArray replyData = configReply->readAll();
+		QByteArray errStr;
+		bool res = false;
+		QVariantMap config = QJsonWrapper::parseJson(replyData, &res, &errStr).toMap();
+
+		if ( !res )
+		{
+			QgsDebugMsg( QStringLiteral( "Error parsing JSON: %1" ).arg( QString( errStr ) ) );
+			return;
+		}
+		//JSV todo NO MAGIC STRINGS
+		if(config.contains("registration_endpoint"))
+		{
+			leRequestUrl->setText(config.value("authorization_endpoint").toString());
+			leTokenUrl->setText(config.value("token_endpoint").toString());
+			Q_EMIT configSucceeded(config.value("registration_endpoint").toString());
+		}
+		else
+		{
+			qWarning()<<"Response doesn't contain registration endpoint";
+		}
+	}
+	configReply->deleteLater();
+}
+
+void QgsAuthOAuth2Edit::onRegisterReplyFinished()
+{
+	//JSV todo
+	qDebug() << "QgsAuthOAuth2Edit::onRegisterReplyFinished";
+    QNetworkReply *registerReply = qobject_cast<QNetworkReply *>(sender());
+    if (registerReply->error() == QNetworkReply::NoError)
+	{
+        QByteArray replyData = registerReply->readAll();
+		QByteArray errStr;
+		bool res = false;
+        QVariantMap clientInfo = QJsonWrapper::parseJson(replyData, &res, &errStr).toMap();
+
+		leClientId->setText(clientInfo.value("client_id").toString());
+		leClientSecret->setText(clientInfo.value("client_secret").toString());
+
+	}
+	registerReply->deleteLater();
+}
+
+void QgsAuthOAuth2Edit::onNetworkError(QNetworkReply::NetworkError error)
+{
+	QNetworkReply *reply = qobject_cast<QNetworkReply *>(sender());
+    qWarning() << "QgsAuthOAuth2Edit::onNetworkError: " << error << ": " << reply->errorString();
+    qDebug() << "QgsAuthOAuth2Edit::onNetworkError: " << reply->readAll();
+}
+
+void QgsAuthOAuth2Edit::registerSoftStatement(const QString& registrationUrl)
+{
+	//JSV add registration logic
+	QUrl regUrl(registrationUrl);
+	if( !regUrl.isValid() )
+	{
+		qWarning()<<"Registration url is not valid";
+		return;
+	}
+	QNetworkRequest registerRequest(regUrl);
+	QNetworkReply * registerReply=mNetworkManager->get(registerRequest);
+
+	connect(registerReply, SIGNAL(finished()), this, SLOT(onRegisterReplyFinished()), Qt::QueuedConnection);
+    connect(registerReply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(onNetworkError(QNetworkReply::NetworkError)), Qt::QueuedConnection);
+}
+
+void QgsAuthOAuth2Edit::getSoftConfig()
+{
+	QString config = leConfigUrl->text();
+	//JSV add logic to disable the register button when invalid
+	//in case of errors clear fields
+	if( config.isEmpty() || config.isNull() )
+	{
+		qWarning()<<"Config url cannot be empty";
+		return;
+	}
+	QUrl configUrl(config);
+	if( !configUrl.isValid() )
+	{
+		qWarning()<<"Config url is not valid";
+		return;
+	}
+	QNetworkRequest configRequest(configUrl);
+	QNetworkReply * configReply=mNetworkManager->get(configRequest);
+
+	connect(configReply, SIGNAL(finished()), this, SLOT(onConfigReplyFinished()), Qt::QueuedConnection);
+    connect(configReply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(onNetworkError(QNetworkReply::NetworkError)), Qt::QueuedConnection);
+}
+
