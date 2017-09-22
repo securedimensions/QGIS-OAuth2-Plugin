@@ -757,7 +757,7 @@
           <item row="0" column="1">
            <widget class="QLineEdit" name="leConfigUrl">
             <property name="placeholderText">
-             <string>Required</string>
+             <string>Optional</string>
             </property>
            </widget>
           </item>
@@ -788,6 +788,9 @@
           </item>
           <item row="2" column="2">
            <widget class="QPushButton" name="btnRegister">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
             <property name="text">
              <string>Register</string>
             </property>

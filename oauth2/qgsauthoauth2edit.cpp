@@ -174,6 +174,8 @@ void QgsAuthOAuth2Edit::setupConnections()
 	  this, SLOT( getSoftStatementDir() ) );
   connect( leSoftStatementDir, SIGNAL( textChanged( const QString & ) ),
 	  this, SLOT( softStatementDirChanged( const QString & ) ) );
+  connect( leConfigUrl, SIGNAL( textChanged( const QString & ) ),
+	  this, SLOT( configUrlChanged( const QString & ) ) );
 
   connect( btnRegister, SIGNAL( clicked() ), this, SLOT( getSoftConfig() ) );
 
@@ -606,7 +608,12 @@ void QgsAuthOAuth2Edit::softStatementDirChanged( const QString &path )
   {
 	  parseSoftwareStatement( path );
   }
+  else
+  {
+    btnRegister->setEnabled(false);
+  }
 }
+
 
 // slot
 void QgsAuthOAuth2Edit::setCurrentDefinedConfig( const QString &id )
@@ -1051,6 +1058,7 @@ void QgsAuthOAuth2Edit::clearQueryPairs()
 void QgsAuthOAuth2Edit::parseSoftwareStatement(const QString& path)
 {
 	//JSV todo
+  //Remove magic strings
 	//change grant flow
 	//"password"-->resource owner->index 2
 	//"authorization_code"-->...->index 0
@@ -1062,24 +1070,46 @@ void QgsAuthOAuth2Edit::parseSoftwareStatement(const QString& path)
 	}
 	if(softwareStatementBase64.isEmpty())
 	{
-		//print error
+		QgsDebugMsg( QStringLiteral( "Error software statement is empty: %1" ).arg( QString( path ) ) );
+    file.close();
 		return;
 	}
 	file.close();
+  mSoftwareStatement.insert("software_statement",softwareStatementBase64);
 	QByteArray payload=softwareStatementBase64.split('.')[1];
 	QByteArray decoded=QByteArray::fromBase64(payload/*, QByteArray::Base64UrlEncoding*/);
-	QByteArray errStr;
-	bool res = false;
-	QVariant jsonData = QJsonWrapper::parseJson(payload, &res, &errStr);
-	qDebug()<<jsonData.isValid();
-	
+  QByteArray errStr;
+  bool res = false;
+	QMap<QString, QVariant> jsonData = QJsonWrapper::parseJson(decoded, &res, &errStr).toMap();
 	if ( !res )
 	{
 		QgsDebugMsg( QStringLiteral( "Error parsing JSON: %1" ).arg( QString( errStr ) ) );
 		return;
 	}
-	qDebug()<<jsonData;
-	
+  if(jsonData.contains("grant_types") && jsonData.contains("redirect_uris"))
+  {
+    QString grantType = jsonData["grant_types"].toStringList()[0];
+    if(grantType == "authorization_code")
+    {
+      cmbbxGrantFlow->setCurrentIndex(0);
+    }
+    else
+    {
+      cmbbxGrantFlow->setCurrentIndex(2);
+    }
+    //Set redirect_uri
+  }
+  else
+  {
+    QgsDebugMsg( QStringLiteral( "Error software statement is invalid: %1" ).arg( QString( path ) ) );
+		return;
+  }
+	if(jsonData.contains("registration_endpoint"))
+	{
+    mRegistrationEndpoint=jsonData["registration_endpoint"].toString();
+    btnRegister->setEnabled(true);
+	}
+
 	QgsDebugMsg( QStringLiteral( "Here is the JSON: %1" ).arg( QString( jsonData.toString() ) ) );
 }
 
@@ -1104,7 +1134,7 @@ void QgsAuthOAuth2Edit::onConfigReplyFinished()
 		{
 			leRequestUrl->setText(config.value("authorization_endpoint").toString());
 			leTokenUrl->setText(config.value("token_endpoint").toString());
-			Q_EMIT configSucceeded(config.value("registration_endpoint").toString());
+      registerSoftStatement(config.value("registration_endpoint").toString());
 		}
 		else
 		{
@@ -1117,20 +1147,26 @@ void QgsAuthOAuth2Edit::onConfigReplyFinished()
 void QgsAuthOAuth2Edit::onRegisterReplyFinished()
 {
 	//JSV todo
-	qDebug() << "QgsAuthOAuth2Edit::onRegisterReplyFinished";
-    QNetworkReply *registerReply = qobject_cast<QNetworkReply *>(sender());
-    if (registerReply->error() == QNetworkReply::NoError)
-	{
-        QByteArray replyData = registerReply->readAll();
-		QByteArray errStr;
-		bool res = false;
-        QVariantMap clientInfo = QJsonWrapper::parseJson(replyData, &res, &errStr).toMap();
+  //better error handling
+  //no magic strings
+  qDebug() << "QgsAuthOAuth2Edit::onRegisterReplyFinished";
+  QNetworkReply *registerReply = qobject_cast<QNetworkReply *>(sender());
+  if (registerReply->error() == QNetworkReply::NoError)
+  {
+    QByteArray replyData = registerReply->readAll();
+    QByteArray errStr;
+    bool res = false;
+    QVariantMap clientInfo = QJsonWrapper::parseJson(replyData, &res, &errStr).toMap();
 
-		leClientId->setText(clientInfo.value("client_id").toString());
-		leClientSecret->setText(clientInfo.value("client_secret").toString());
+    leClientId->setText(clientInfo.value("client_id").toString());
+    leClientSecret->setText(clientInfo.value("client_secret").toString());
+    leRequestUrl->setText(clientInfo.value("authorization_endpoint").toString());
+    leTokenUrl->setText(clientInfo.value("token_endpoint").toString());
 
-	}
-	registerReply->deleteLater();
+    tabConfigs->setCurrentIndex(0);
+  }
+
+  registerReply->deleteLater();
 }
 
 void QgsAuthOAuth2Edit::onNetworkError(QNetworkReply::NetworkError error)
@@ -1142,40 +1178,39 @@ void QgsAuthOAuth2Edit::onNetworkError(QNetworkReply::NetworkError error)
 
 void QgsAuthOAuth2Edit::registerSoftStatement(const QString& registrationUrl)
 {
-	//JSV add registration logic
+	//JSV todo error handling
 	QUrl regUrl(registrationUrl);
 	if( !regUrl.isValid() )
 	{
 		qWarning()<<"Registration url is not valid";
 		return;
 	}
-	QNetworkRequest registerRequest(regUrl);
-	QNetworkReply * registerReply=mNetworkManager->get(registerRequest);
+	QByteArray errStr;
+	bool res = false;
+  QByteArray json = QJsonWrapper::toJson(QVariant(mSoftwareStatement),&res,&errStr);
+  QNetworkRequest registerRequest(regUrl);
+  registerRequest.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+  QNetworkReply * registerReply=mNetworkManager->post(registerRequest, json);
 
 	connect(registerReply, SIGNAL(finished()), this, SLOT(onRegisterReplyFinished()), Qt::QueuedConnection);
-    connect(registerReply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(onNetworkError(QNetworkReply::NetworkError)), Qt::QueuedConnection);
+  connect(registerReply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(onNetworkError(QNetworkReply::NetworkError)), Qt::QueuedConnection);
 }
 
 void QgsAuthOAuth2Edit::getSoftConfig()
 {
-	QString config = leConfigUrl->text();
-	//JSV add logic to disable the register button when invalid
-	//in case of errors clear fields
-	if( config.isEmpty() || config.isNull() )
-	{
-		qWarning()<<"Config url cannot be empty";
-		return;
-	}
-	QUrl configUrl(config);
-	if( !configUrl.isValid() )
-	{
-		qWarning()<<"Config url is not valid";
-		return;
-	}
-	QNetworkRequest configRequest(configUrl);
-	QNetworkReply * configReply=mNetworkManager->get(configRequest);
+  if(!mRegistrationEndpoint.isEmpty())
+  {
+    registerSoftStatement(mRegistrationEndpoint);
+  }
+  else
+  {
+	  QString config = leConfigUrl->text();
+	  QUrl configUrl(config);
+	  QNetworkRequest configRequest(configUrl);
+	  QNetworkReply * configReply=mNetworkManager->get(configRequest);
 
-	connect(configReply, SIGNAL(finished()), this, SLOT(onConfigReplyFinished()), Qt::QueuedConnection);
+	  connect(configReply, SIGNAL(finished()), this, SLOT(onConfigReplyFinished()), Qt::QueuedConnection);
     connect(configReply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(onNetworkError(QNetworkReply::NetworkError)), Qt::QueuedConnection);
+  }
 }
 

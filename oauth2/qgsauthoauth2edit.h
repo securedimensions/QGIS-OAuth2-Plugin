@@ -82,20 +82,18 @@ class QgsAuthOAuth2Edit : public QgsAuthMethodEdit, private Ui::QgsAuthOAuth2Edi
     void tabIndexChanged( int indx );
 
     void definedCustomDirChanged( const QString &path );
-	void softStatementDirChanged( const QString &path );
+	  void softStatementDirChanged( const QString &path );
 
     void getDefinedCustomDir();
-	void getSoftStatementDir();
+	  void getSoftStatementDir();
 
-	void registerSoftStatement(const QString& registrationUrl);
-	void getSoftConfig();
+	  void registerSoftStatement(const QString& registrationUrl);
+	  void getSoftConfig();
 	
-	void onConfigReplyFinished();
-	void onNetworkError(QNetworkReply::NetworkError error);
-	void onRegisterReplyFinished();
+	  void onConfigReplyFinished();
+	  void onNetworkError(QNetworkReply::NetworkError error);
+	  void onRegisterReplyFinished();
 
-  Q_SIGNALS:
-	void configSucceeded(const QString& registrationUrl);
 
 
   private:
@@ -116,10 +114,10 @@ class QgsAuthOAuth2Edit : public QgsAuthMethodEdit, private Ui::QgsAuthOAuth2Edi
 
     int customTab() const { return 0; }
     int definedTab() const { return 1; }
-	int statementTab() const { return 2; }
+	  int statementTab() const { return 2; }
     bool onCustomTab() const;
     bool onDefinedTab() const;
-	bool onStatementTab() const;
+	  bool onStatementTab() const;
 
     QString currentDefinedConfig() const { return mDefinedId; }
 
@@ -130,6 +128,8 @@ class QgsAuthOAuth2Edit : public QgsAuthMethodEdit, private Ui::QgsAuthOAuth2Edi
     QgsStringMap mConfigMap;
     bool mValid;
     int mCurTab;
+	  QString mRegistrationEndpoint;
+    QMap<QString,QVariant> mSoftwareStatement;
     bool mPrevPersistToken;
     QToolButton *btnTokenClear;
 	QNetworkAccessManager *mNetworkManager;
