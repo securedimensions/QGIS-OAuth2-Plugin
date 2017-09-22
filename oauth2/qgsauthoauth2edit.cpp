@@ -1162,6 +1162,7 @@ void QgsAuthOAuth2Edit::onRegisterReplyFinished()
     leClientSecret->setText(clientInfo.value("client_secret").toString());
     leRequestUrl->setText(clientInfo.value("authorization_endpoint").toString());
     leTokenUrl->setText(clientInfo.value("token_endpoint").toString());
+    leScope->setText(clientInfo.value("scopes").toString());
 
     tabConfigs->setCurrentIndex(0);
   }
