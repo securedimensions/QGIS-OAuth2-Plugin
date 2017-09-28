@@ -33,6 +33,7 @@
 #include <QEventLoop>
 #include <QSettings>
 #include <QString>
+#include <QInputDialog>
 
 
 static const QString AUTH_METHOD_KEY = QStringLiteral( "OAuth2" );
@@ -106,7 +107,6 @@ bool QgsAuthOAuth2Method::updateNetworkRequest( QNetworkRequest &request, const 
   Q_UNUSED( dataprovider )
 
   QString msg;
-
   QgsO2 *o2 = getOAuth2Bundle( authcfg );
   if ( !o2 )
   {
@@ -174,12 +174,16 @@ bool QgsAuthOAuth2Method::updateNetworkRequest( QNetworkRequest &request, const 
     connect( o2, SIGNAL( linkingSucceeded() ), this, SLOT( onLinkingSucceeded() ), Qt::UniqueConnection );
     connect( o2, SIGNAL( openBrowser( QUrl ) ), this, SLOT( onOpenBrowser( QUrl ) ), Qt::UniqueConnection );
     connect( o2, SIGNAL( closeBrowser() ), this, SLOT( onCloseBrowser() ), Qt::UniqueConnection );
+    connect( o2, SIGNAL( getAuthCode() ), this, SLOT( onAuthCode() ), Qt::UniqueConnection );
+    connect( this, SIGNAL( setAuthCode( QString ) ), o2, SLOT( onSetAuthCode( QString ) ), Qt::UniqueConnection );
 #else
     connect( o2, &QgsO2::linkedChanged, this, &QgsAuthOAuth2Method::onLinkedChanged, Qt::UniqueConnection );
     connect( o2, &QgsO2::linkingFailed, this, &QgsAuthOAuth2Method::onLinkingFailed, Qt::UniqueConnection );
     connect( o2, &QgsO2::linkingSucceeded, this, &QgsAuthOAuth2Method::onLinkingSucceeded, Qt::UniqueConnection );
     connect( o2, &QgsO2::openBrowser, this, &QgsAuthOAuth2Method::onOpenBrowser, Qt::UniqueConnection );
     connect( o2, &QgsO2::closeBrowser, this, &QgsAuthOAuth2Method::onCloseBrowser, Qt::UniqueConnection );
+    connect( o2, &QgsO2::getAuthCode, this, &QgsAuthOAuth2Method::onAuthCode, Qt::UniqueConnection );
+    connect( this, &QgsAuthOAuth2Method::setAuthCode, o2,  &QgsO2::onSetAuthCode, Qt::UniqueConnection );
 #endif
 
     //qRegisterMetaType<QNetworkReply::NetworkError>( QStringLiteral( "QNetworkReply::NetworkError" )) // for Qt::QueuedConnection, if needed;
@@ -327,6 +331,16 @@ bool QgsAuthOAuth2Method::updateNetworkReply( QNetworkReply *reply, const QStrin
   QgsMessageLog::logMessage( msg, AUTH_METHOD_KEY, QgsMessageLog::INFO );
 
   return true;
+}
+
+void QgsAuthOAuth2Method::onAuthCode()
+{
+  bool ok = false;
+  QString code = QInputDialog::getText( QApplication::activeWindow(), "Enter the authorization code", "Authoriation code", QLineEdit::Normal, "Required", &ok, Qt::Dialog, Qt::InputMethodHint::ImhNone);
+  if( ok && !code.isEmpty())
+  {
+    Q_EMIT setAuthCode(code);
+  }
 }
 
 void QgsAuthOAuth2Method::onLinkedChanged()

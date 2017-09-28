@@ -1098,6 +1098,8 @@ void QgsAuthOAuth2Edit::parseSoftwareStatement(const QString& path)
       cmbbxGrantFlow->setCurrentIndex(2);
     }
     //Set redirect_uri
+    QString redirectUri = jsonData["redirect_uris"].toStringList()[0];
+    leRedirectUrl->setText(redirectUri);
   }
   else
   {

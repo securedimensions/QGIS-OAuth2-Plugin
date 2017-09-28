@@ -43,6 +43,7 @@ class QgsO2: public O2
 
   public slots:
     void clearProperties();
+    void onSetAuthCode(const QString &code);
 
   public Q_SLOTS:
 	/// Authenticate.
@@ -57,9 +58,12 @@ class QgsO2: public O2
 
   Q_SIGNALS:
 	void stateChanged();
+  void getAuthCode();
 
   private:
     void initOAuthConfig();
+
+    bool isLocalHost(QUrl redirectUrl);
 
     void setSettingsStore( bool persist = false );
 
@@ -67,6 +71,7 @@ class QgsO2: public O2
 
     QString mTokenCacheFile;
     QString mAuthcfg;
+    bool mIsLocalHost;
     QgsAuthOAuth2Config *mOAuth2Config;
 
 };

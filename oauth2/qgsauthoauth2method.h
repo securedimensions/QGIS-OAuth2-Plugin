@@ -58,12 +58,18 @@ class QgsAuthOAuth2Method : public QgsAuthMethod
     void onLinkedChanged();
     void onLinkingFailed();
     void onLinkingSucceeded();
+    void onAuthCode();
 
     void onOpenBrowser( const QUrl &url );
     void onCloseBrowser();
     void onReplyFinished();
     void onNetworkError( QNetworkReply::NetworkError err );
     void onRefreshFinished( QNetworkReply::NetworkError err );
+
+  Q_SIGNALS:
+    void setAuthCode(const QString &code);
+  
+    
 
   private:
     QString mTempStorePath;
