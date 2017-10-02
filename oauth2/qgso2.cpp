@@ -219,6 +219,11 @@ void QgsO2::link()
     parameters.append(qMakePair(QString(O2_OAUTH2_STATE), state_));
     parameters.append(qMakePair(QString(O2_OAUTH2_API_KEY), apiKey_));
 
+    for(QVariantMap::const_iterator iter = extraReqParams_.begin(); iter != extraReqParams_.end(); ++iter)
+    {
+      parameters.append(qMakePair(iter.key(), iter.value().toString()));
+    }
+
     // Show authentication URL with a web browser
     QUrl url(requestUrl_);
     addQueryParametersToUrl(url, parameters);
@@ -239,6 +244,14 @@ void QgsO2::link()
     parameters.append(O0RequestParameter(O2_OAUTH2_GRANT_TYPE, O2_OAUTH2_GRANT_TYPE_PASSWORD));
     parameters.append(O0RequestParameter(O2_OAUTH2_SCOPE, scope_.toUtf8()));
     parameters.append(O0RequestParameter(O2_OAUTH2_API_KEY, apiKey_.toUtf8()));
+
+
+    for(QVariantMap::const_iterator iter = extraReqParams_.begin(); iter != extraReqParams_.end(); ++iter)
+    {
+      parameters.append(O0RequestParameter(iter.key().toUtf8(), iter.value().toString().toUtf8()));
+    }
+
+
     QByteArray payload = O0BaseAuth::createQueryParameters(parameters);
 
     QUrl url(tokenUrl_);
