@@ -1,23 +1,23 @@
 /* Copyright 2014, Uwe L. Korn <uwelk@xhochy.com>
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy
+* of this software and associated documentation files (the "Software"), to deal
+* in the Software without restriction, including without limitation the rights
+* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+* copies of the Software, and to permit persons to whom the Software is
+* furnished to do so, subject to the following conditions:
+*
+* The above copyright notice and this permission notice shall be included in all
+* copies or substantial portions of the Software.
+*
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+* SOFTWARE.
+*/
 
 #include "Json.h"
 
@@ -36,7 +36,7 @@ namespace QJsonWrapper
 {
 
   QVariantMap
-  qobject2qvariant( const QObject *object )
+    qobject2qvariant( const QObject *object )
   {
 #if QT_VERSION >= QT_VERSION_CHECK( 5, 0, 0 )
     QVariantMap map;
@@ -62,7 +62,7 @@ namespace QJsonWrapper
 
 
   void
-  qvariant2qobject( const QVariantMap &variant, QObject *object )
+    qvariant2qobject( const QVariantMap &variant, QObject *object )
   {
 #if QT_VERSION >= QT_VERSION_CHECK( 5, 0, 0 )
     for ( QVariantMap::const_iterator iter = variant.begin(); iter != variant.end(); ++iter )
@@ -90,7 +90,7 @@ namespace QJsonWrapper
 
 
   QVariant
-  parseJson( const QByteArray &jsonData, bool *ok, QByteArray *errorString )
+    parseJson( const QByteArray &jsonData, bool *ok, QByteArray *errorString )
   {
 #if QT_VERSION >= QT_VERSION_CHECK( 5, 0, 0 )
     QJsonParseError error;
@@ -117,7 +117,7 @@ namespace QJsonWrapper
 
 
   QByteArray
-  toJson( const QVariant &variant, bool *ok, QByteArray *errorString, bool indented )
+    toJson( const QVariant &variant, bool *ok, QByteArray *errorString, bool indented )
   {
 #if QT_VERSION >= QT_VERSION_CHECK( 5, 0, 0 )
     QVariant _variant = variant;

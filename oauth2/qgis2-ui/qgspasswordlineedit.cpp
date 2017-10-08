@@ -1,22 +1,22 @@
 /***************************************************************************
-                              qgspasswordineedit.cpp
-                              ------------------------
-  begin                : August 03, 2016
-  copyright            : (C) 2016 by Boundless Spatial, Inc. USA
-  author               : Larry Shaffer
-  email                : lshaffer at boundlessgeo dot com
+qgspasswordineedit.cpp
+------------------------
+begin                : August 03, 2016
+copyright            : (C) 2016 by Boundless Spatial, Inc. USA
+author               : Larry Shaffer
+email                : lshaffer at boundlessgeo dot com
 
-  based on             : QgsFilterLineEdit by Alex Bruy
- ***************************************************************************/
+based on             : QgsFilterLineEdit by Alex Bruy
+***************************************************************************/
 
 /***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+*                                                                         *
+*   This program is free software; you can redistribute it and/or modify  *
+*   it under the terms of the GNU General Public License as published by  *
+*   the Free Software Foundation; either version 2 of the License, or     *
+*   (at your option) any later version.                                   *
+*                                                                         *
+***************************************************************************/
 
 #include "qgspasswordlineedit.h"
 
@@ -25,8 +25,8 @@
 
 
 QgsPasswordLineEdit::QgsPasswordLineEdit( QWidget* parent )
-    : QLineEdit( parent )
-    , btnToggle( nullptr )
+  : QLineEdit( parent )
+  , btnToggle( nullptr )
 {
   mHiddenIcon = QIcon( ":/oauth2method/oauth2_resources/hidden.svg" );
   mShownIcon = QIcon( ":/oauth2method/oauth2_resources/visible_red.svg" );
@@ -45,11 +45,11 @@ QgsPasswordLineEdit::QgsPasswordLineEdit( QWidget* parent )
 
   int frameWidth = style()->pixelMetric( QStyle::PM_DefaultFrameWidth );
   mStyleSheet = QString( "QLineEdit { padding-right: %1px; } " )
-                .arg( btnToggle->sizeHint().width() + frameWidth + 1 );
+    .arg( btnToggle->sizeHint().width() + frameWidth + 1 );
 
   QSize msz = minimumSizeHint();
   setMinimumSize( qMax( msz.width(), btnToggle->sizeHint().height() + frameWidth * 2 + 2 ),
-                  qMax( msz.height(), btnToggle->sizeHint().height() + frameWidth * 2 + 2 ) );
+    qMax( msz.height(), btnToggle->sizeHint().height() + frameWidth * 2 + 2 ) );
 }
 
 void QgsPasswordLineEdit::resizeEvent( QResizeEvent * )
@@ -57,7 +57,7 @@ void QgsPasswordLineEdit::resizeEvent( QResizeEvent * )
   QSize sz = btnToggle->sizeHint();
   int frameWidth = style()->pixelMetric( QStyle::PM_DefaultFrameWidth );
   btnToggle->move( rect().right() - frameWidth - sz.width(),
-                  ( rect().bottom() + 1 - sz.height() ) / 2 );
+    ( rect().bottom() + 1 - sz.height() ) / 2 );
 }
 
 void QgsPasswordLineEdit::togglePassword( bool toggled )

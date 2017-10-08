@@ -1,16 +1,16 @@
 /***************************************************************************
-    begin                : July 13, 2016
-    copyright            : (C) 2016 by Monsanto Company, USA
-    author               : Larry Shaffer, Boundless Spatial
-    email                : lshaffer at boundlessgeo dot com
- ***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+begin                : July 13, 2016
+copyright            : (C) 2016 by Monsanto Company, USA
+author               : Larry Shaffer, Boundless Spatial
+email                : lshaffer at boundlessgeo dot com
+***************************************************************************
+*                                                                         *
+*   This program is free software; you can redistribute it and/or modify  *
+*   it under the terms of the GNU General Public License as published by  *
+*   the Free Software Foundation; either version 2 of the License, or     *
+*   (at your option) any later version.                                   *
+*                                                                         *
+***************************************************************************/
 
 #ifndef QGSAUTHOAUTH2EDIT_H
 #define QGSAUTHOAUTH2EDIT_H
@@ -27,112 +27,112 @@
 
 class QgsAuthOAuth2Edit : public QgsAuthMethodEdit, private Ui::QgsAuthOAuth2Edit
 {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    explicit QgsAuthOAuth2Edit( QWidget *parent = nullptr );
-    virtual ~QgsAuthOAuth2Edit();
+public:
+  explicit QgsAuthOAuth2Edit( QWidget *parent = nullptr );
+  virtual ~QgsAuthOAuth2Edit();
 
-    bool validateConfig() override;
+  bool validateConfig() override;
 
-    QgsStringMap configMap() const override;
+  QgsStringMap configMap() const override;
 
-  public slots:
-    void loadConfig( const QgsStringMap &configmap ) override;
+public slots:
+  void loadConfig( const QgsStringMap &configmap ) override;
 
-    void resetConfig() override;
+  void resetConfig() override;
 
-    void clearConfig() override;
+  void clearConfig() override;
 
-  private slots:
-    void setupConnections();
+private slots:
+  void setupConnections();
 
-    void configValidityChanged();
+  void configValidityChanged();
 
-    void removeTokenCacheFile();
+  void removeTokenCacheFile();
 
-    void populateGrantFlows();
-    void updateGrantFlow( int indx );
+  void populateGrantFlows();
+  void updateGrantFlow( int indx );
 
-    void exportOAuthConfig();
-    void importOAuthConfig();
+  void exportOAuthConfig();
+  void importOAuthConfig();
 
-    void descriptionChanged();
+  void descriptionChanged();
 
-    void populateAccessMethods();
-    void updateConfigAccessMethod( int indx );
+  void populateAccessMethods();
+  void updateConfigAccessMethod( int indx );
 
-    void addQueryPair();
-    void removeQueryPair();
-    void clearQueryPairs();
-    void populateQueryPairs( const QVariantMap &querypairs, bool append = false );
-    void queryTableSelectionChanged();
-    void updateConfigQueryPairs();
+  void addQueryPair();
+  void removeQueryPair();
+  void clearQueryPairs();
+  void populateQueryPairs( const QVariantMap &querypairs, bool append = false );
+  void queryTableSelectionChanged();
+  void updateConfigQueryPairs();
 
-    void updateDefinedConfigsCache();
-    void loadDefinedConfigs();
-    void setCurrentDefinedConfig( const QString &id );
-    void currentDefinedItemChanged( QListWidgetItem *cur, QListWidgetItem *prev );
-    void selectCurrentDefinedConfig();
+  void updateDefinedConfigsCache();
+  void loadDefinedConfigs();
+  void setCurrentDefinedConfig( const QString &id );
+  void currentDefinedItemChanged( QListWidgetItem *cur, QListWidgetItem *prev );
+  void selectCurrentDefinedConfig();
 
-    void loadFromOAuthConfig( const QgsAuthOAuth2Config *config = nullptr );
+  void loadFromOAuthConfig( const QgsAuthOAuth2Config *config = nullptr );
 
-    void updateTokenCacheFile( bool curpersist ) const;
+  void updateTokenCacheFile( bool curpersist ) const;
 
-    void tabIndexChanged( int indx );
+  void tabIndexChanged( int indx );
 
-    void definedCustomDirChanged( const QString &path );
-	  void softStatementDirChanged( const QString &path );
+  void definedCustomDirChanged( const QString &path );
+  void softStatementDirChanged( const QString &path );
 
-    void getDefinedCustomDir();
-	  void getSoftStatementDir();
+  void getDefinedCustomDir();
+  void getSoftStatementDir();
 
-	  void registerSoftStatement(const QString& registrationUrl);
-	  void getSoftConfig();
-	
-	  void onConfigReplyFinished();
-	  void onNetworkError(QNetworkReply::NetworkError error);
-	  void onRegisterReplyFinished();
+  void registerSoftStatement(const QString& registrationUrl);
+  void getSoftConfig();
+
+  void onConfigReplyFinished();
+  void onNetworkError(QNetworkReply::NetworkError error);
+  void onRegisterReplyFinished();
 
 
 
-  private:
-    void initGui();
-	void parseSoftwareStatement(const QString& path);
+private:
+  void initGui();
+  void parseSoftwareStatement(const QString& path);
 
-    QWidget *parentWidget() const;
-    QLineEdit *parentNameField() const;
-    QString parentConfigId() const;
+  QWidget *parentWidget() const;
+  QLineEdit *parentNameField() const;
+  QString parentConfigId() const;
 
-    void initConfigObjs();
-    void deleteConfigObjs();
+  void initConfigObjs();
+  void deleteConfigObjs();
 
-    bool hasTokenCacheFile();
+  bool hasTokenCacheFile();
 
-    void addQueryPairRow( const QString &key, const QString &val );
-    QVariantMap queryPairs() const;
+  void addQueryPairRow( const QString &key, const QString &val );
+  QVariantMap queryPairs() const;
 
-    int customTab() const { return 0; }
-    int definedTab() const { return 1; }
-	  int statementTab() const { return 2; }
-    bool onCustomTab() const;
-    bool onDefinedTab() const;
-	  bool onStatementTab() const;
+  int customTab() const { return 0; }
+  int definedTab() const { return 1; }
+  int statementTab() const { return 2; }
+  bool onCustomTab() const;
+  bool onDefinedTab() const;
+  bool onStatementTab() const;
 
-    QString currentDefinedConfig() const { return mDefinedId; }
+  QString currentDefinedConfig() const { return mDefinedId; }
 
-    QgsAuthOAuth2Config *mOAuthConfigCustom;
-    QgsStringMap mDefinedConfigsCache;
-    QString mDefinedId;
-    QLineEdit *mParentName;
-    QgsStringMap mConfigMap;
-    bool mValid;
-    int mCurTab;
-	  QString mRegistrationEndpoint;
-    QMap<QString,QVariant> mSoftwareStatement;
-    bool mPrevPersistToken;
-    QToolButton *btnTokenClear;
-	QNetworkAccessManager *mNetworkManager;
+  QgsAuthOAuth2Config *mOAuthConfigCustom;
+  QgsStringMap mDefinedConfigsCache;
+  QString mDefinedId;
+  QLineEdit *mParentName;
+  QgsStringMap mConfigMap;
+  bool mValid;
+  int mCurTab;
+  QString mRegistrationEndpoint;
+  QMap<QString,QVariant> mSoftwareStatement;
+  bool mPrevPersistToken;
+  QToolButton *btnTokenClear;
+  QNetworkAccessManager *mNetworkManager;
 };
 
 #endif // QGSAUTHOAUTH2EDIT_H

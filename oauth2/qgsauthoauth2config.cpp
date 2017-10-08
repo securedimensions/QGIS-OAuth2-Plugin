@@ -1,16 +1,16 @@
 /***************************************************************************
-    begin                : July 30, 2016
-    copyright            : (C) 2016 by Monsanto Company, USA
-    author               : Larry Shaffer, Boundless Spatial
-    email                : lshaffer at boundlessgeo dot com
- ***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+begin                : July 30, 2016
+copyright            : (C) 2016 by Monsanto Company, USA
+author               : Larry Shaffer, Boundless Spatial
+email                : lshaffer at boundlessgeo dot com
+***************************************************************************
+*                                                                         *
+*   This program is free software; you can redistribute it and/or modify  *
+*   it under the terms of the GNU General Public License as published by  *
+*   the Free Software Foundation; either version 2 of the License, or     *
+*   (at your option) any later version.                                   *
+*                                                                         *
+***************************************************************************/
 
 #include "qgsauthoauth2config.h"
 
@@ -283,26 +283,26 @@ void QgsAuthOAuth2Config::setToDefaults()
 bool QgsAuthOAuth2Config::operator==( const QgsAuthOAuth2Config &other ) const
 {
   return ( other.version() == this->version()
-           && other.configType() == this->configType()
-           && other.grantFlow() == this->grantFlow()
-           && other.name() == this->name()
-           && other.description() == this->description()
-           && other.requestUrl() == this->requestUrl()
-           && other.tokenUrl() == this->tokenUrl()
-           && other.refreshTokenUrl() == this->refreshTokenUrl()
-           && other.redirectUrl() == this->redirectUrl()
-           && other.redirectPort() == this->redirectPort()
-           && other.clientId() == this->clientId()
-           && other.clientSecret() == this->clientSecret()
-           && other.username() == this->username()
-           && other.password() == this->password()
-           && other.scope() == this->scope()
-           //&& other.state() == this->state()
-           && other.apiKey() == this->apiKey()
-           && other.persistToken() == this->persistToken()
-           && other.accessMethod() == this->accessMethod()
-           && other.requestTimeout() == this->requestTimeout()
-           && other.queryPairs() == this->queryPairs() );
+    && other.configType() == this->configType()
+    && other.grantFlow() == this->grantFlow()
+    && other.name() == this->name()
+    && other.description() == this->description()
+    && other.requestUrl() == this->requestUrl()
+    && other.tokenUrl() == this->tokenUrl()
+    && other.refreshTokenUrl() == this->refreshTokenUrl()
+    && other.redirectUrl() == this->redirectUrl()
+    && other.redirectPort() == this->redirectPort()
+    && other.clientId() == this->clientId()
+    && other.clientSecret() == this->clientSecret()
+    && other.username() == this->username()
+    && other.password() == this->password()
+    && other.scope() == this->scope()
+    //&& other.state() == this->state()
+    && other.apiKey() == this->apiKey()
+    && other.persistToken() == this->persistToken()
+    && other.accessMethod() == this->accessMethod()
+    && other.requestTimeout() == this->requestTimeout()
+    && other.queryPairs() == this->queryPairs() );
 }
 
 bool QgsAuthOAuth2Config::operator!=( const QgsAuthOAuth2Config &other ) const
@@ -329,18 +329,18 @@ void QgsAuthOAuth2Config::validateConfigId( bool needsId )
   if ( mGrantFlow == AuthCode || mGrantFlow == Implicit )
   {
     mValid = ( !requestUrl().isEmpty()
-               && !tokenUrl().isEmpty()
-               && !clientId().isEmpty()
-               && ( mGrantFlow == AuthCode ? !clientSecret().isEmpty() : true )
-               && redirectPort() > 0
-               && ( needsId ? !id().isEmpty() : true ) );
+      && !tokenUrl().isEmpty()
+      && !clientId().isEmpty()
+      && ( mGrantFlow == AuthCode ? !clientSecret().isEmpty() : true )
+      && redirectPort() > 0
+      && ( needsId ? !id().isEmpty() : true ) );
   }
   else if ( mGrantFlow == ResourceOwner )
   {
     mValid = ( !tokenUrl().isEmpty()
-               && !username().isEmpty()
-               && !password().isEmpty()
-               && ( needsId ? !id().isEmpty() : true ) );
+      && !username().isEmpty()
+      && !password().isEmpty()
+      && ( needsId ? !id().isEmpty() : true ) );
   }
 
   if ( mValid != oldvalid ) emit validityChanged( mValid );
@@ -573,7 +573,7 @@ QList<QgsAuthOAuth2Config *> QgsAuthOAuth2Config::loadOAuth2Configs(
   if ( configfiles.size() > 0 )
   {
     QgsDebugMsg( QStringLiteral( "Config files found in: %1...\n%2" )
-                 .arg( configdir.path(), configfiles.join( QStringLiteral( ", " ) ) ) );
+      .arg( configdir.path(), configfiles.join( QStringLiteral( ", " ) ) ) );
   }
   else
   {
@@ -650,7 +650,7 @@ QgsStringMap QgsAuthOAuth2Config::mapOAuth2Configs(
   if ( configfiles.size() > 0 )
   {
     QgsDebugMsg( QStringLiteral( "Config files found in: %1...\n%2" )
-                 .arg( configdir.path(), configfiles.join( QStringLiteral( ", " ) ) ) );
+      .arg( configdir.path(), configfiles.join( QStringLiteral( ", " ) ) ) );
   }
   else
   {
@@ -715,7 +715,7 @@ QgsStringMap QgsAuthOAuth2Config::mappedOAuth2ConfigsCache( const QString &extra
   QStringList configdirs;
   // in order of override preference, i.e. user over pkg dir
   configdirs << QgsAuthOAuth2Config::oauth2ConfigsPkgDataDir()
-             << QgsAuthOAuth2Config::oauth2ConfigsUserSettingsDir();
+    << QgsAuthOAuth2Config::oauth2ConfigsUserSettingsDir();
 
   if ( !extradir.isEmpty() )
   {
@@ -731,7 +731,7 @@ QgsStringMap QgsAuthOAuth2Config::mappedOAuth2ConfigsCache( const QString &extra
       continue;
     }
     QgsStringMap newconfigs = QgsAuthOAuth2Config::mapOAuth2Configs(
-                                configdirinfo.canonicalFilePath(), qApp, QgsAuthOAuth2Config::JSON, &ok );
+      configdirinfo.canonicalFilePath(), qApp, QgsAuthOAuth2Config::JSON, &ok );
     if ( ok )
     {
       QgsStringMap::const_iterator i = newconfigs.constBegin();
@@ -762,10 +762,10 @@ QString QgsAuthOAuth2Config::configTypeString( QgsAuthOAuth2Config::ConfigType c
 {
   switch ( configtype )
   {
-    case QgsAuthOAuth2Config::Custom:
-      return tr( "Custom" );
-    case QgsAuthOAuth2Config::Predefined:
-      return tr( "Predefined" );
+  case QgsAuthOAuth2Config::Custom:
+    return tr( "Custom" );
+  case QgsAuthOAuth2Config::Predefined:
+    return tr( "Predefined" );
   }
 }
 
@@ -774,12 +774,12 @@ QString QgsAuthOAuth2Config::grantFlowString( QgsAuthOAuth2Config::GrantFlow flo
 {
   switch ( flow )
   {
-    case QgsAuthOAuth2Config::AuthCode:
-      return tr( "Authorization Code" );
-    case QgsAuthOAuth2Config::Implicit:
-      return tr( "Implicit" );
-    case QgsAuthOAuth2Config::ResourceOwner:
-      return tr( "Resource Owner" );
+  case QgsAuthOAuth2Config::AuthCode:
+    return tr( "Authorization Code" );
+  case QgsAuthOAuth2Config::Implicit:
+    return tr( "Implicit" );
+  case QgsAuthOAuth2Config::ResourceOwner:
+    return tr( "Resource Owner" );
   }
 }
 
@@ -788,12 +788,12 @@ QString QgsAuthOAuth2Config::accessMethodString( QgsAuthOAuth2Config::AccessMeth
 {
   switch ( method )
   {
-    case QgsAuthOAuth2Config::Header:
-      return tr( "Header" );
-    case QgsAuthOAuth2Config::Form:
-      return tr( "Form (POST only)" );
-    case QgsAuthOAuth2Config::Query:
-      return tr( "URL Query" );
+  case QgsAuthOAuth2Config::Header:
+    return tr( "Header" );
+  case QgsAuthOAuth2Config::Form:
+    return tr( "Form (POST only)" );
+  case QgsAuthOAuth2Config::Query:
+    return tr( "URL Query" );
   }
 }
 
@@ -814,5 +814,5 @@ QString QgsAuthOAuth2Config::tokenCacheFile( const QString &suffix )
 QString QgsAuthOAuth2Config::tokenCachePath( const QString &suffix, bool temporary )
 {
   return QStringLiteral( "%1/%2" ).arg( QgsAuthOAuth2Config::tokenCacheDirectory( temporary ),
-                                        QgsAuthOAuth2Config::tokenCacheFile( suffix ) );
+    QgsAuthOAuth2Config::tokenCacheFile( suffix ) );
 }

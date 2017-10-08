@@ -1,16 +1,16 @@
 /***************************************************************************
-    begin                : July 13, 2016
-    copyright            : (C) 2016 by Monsanto Company, USA
-    author               : Larry Shaffer, Boundless Spatial
-    email                : lshaffer at boundlessgeo dot com
- ***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+begin                : July 13, 2016
+copyright            : (C) 2016 by Monsanto Company, USA
+author               : Larry Shaffer, Boundless Spatial
+email                : lshaffer at boundlessgeo dot com
+***************************************************************************
+*                                                                         *
+*   This program is free software; you can redistribute it and/or modify  *
+*   it under the terms of the GNU General Public License as published by  *
+*   the Free Software Foundation; either version 2 of the License, or     *
+*   (at your option) any later version.                                   *
+*                                                                         *
+***************************************************************************/
 
 #include "qgsauthoauth2method.h"
 
@@ -49,14 +49,14 @@ QgsAuthOAuth2Method::QgsAuthOAuth2Method()
   setVersion( 1 );
   setExpansions( QgsAuthMethod::NetworkRequest | QgsAuthMethod::NetworkReply );
   setDataProviders( QStringList()
-                    << QStringLiteral( "ows" )
-                    << QStringLiteral( "wfs" )  // convert to lowercase
-                    << QStringLiteral( "wcs" )
-                    << QStringLiteral( "wms" ) );
+    << QStringLiteral( "ows" )
+    << QStringLiteral( "wfs" )  // convert to lowercase
+    << QStringLiteral( "wcs" )
+    << QStringLiteral( "wms" ) );
 
   QStringList cachedirpaths;
   cachedirpaths << QgsAuthOAuth2Config::tokenCacheDirectory()
-                << QgsAuthOAuth2Config::tokenCacheDirectory( true );
+    << QgsAuthOAuth2Config::tokenCacheDirectory( true );
 
   Q_FOREACH ( const QString &cachedirpath, cachedirpaths )
   {
@@ -102,11 +102,11 @@ QString QgsAuthOAuth2Method::displayDescription() const
 }
 
 bool QgsAuthOAuth2Method::updateNetworkRequest( QNetworkRequest &request, const QString &authcfg,
-    const QString &dataprovider )
+  const QString &dataprovider )
 {
   Q_UNUSED( dataprovider )
 
-  QString msg;
+    QString msg;
   QgsO2 *o2 = getOAuth2Bundle( authcfg );
   if ( !o2 )
   {
@@ -189,7 +189,7 @@ bool QgsAuthOAuth2Method::updateNetworkRequest( QNetworkRequest &request, const 
     //qRegisterMetaType<QNetworkReply::NetworkError>( QStringLiteral( "QNetworkReply::NetworkError" )) // for Qt::QueuedConnection, if needed;
 #if QT_VERSION < QT_VERSION_CHECK( 5, 0, 0 )
     connect( o2, SIGNAL( refreshFinished( QNetworkReply::NetworkError ) ),
-             this, SLOT( onRefreshFinished( QNetworkReply::NetworkError ) ), Qt::UniqueConnection );
+      this, SLOT( onRefreshFinished( QNetworkReply::NetworkError ) ), Qt::UniqueConnection );
 #else
     connect( o2, &QgsO2::refreshFinished, this, &QgsAuthOAuth2Method::onRefreshFinished, Qt::UniqueConnection );
 #endif
@@ -267,37 +267,37 @@ bool QgsAuthOAuth2Method::updateNetworkRequest( QNetworkRequest &request, const 
 #endif
   switch ( accessmethod )
   {
-    case QgsAuthOAuth2Config::Header:
-      request.setRawHeader( O2_HTTP_AUTHORIZATION_HEADER, QStringLiteral( "Bearer %1" ).arg( o2->token() ).toAscii() );
-      msg = QStringLiteral( "Updated request HEADER with access token for authcfg: %1" ).arg( authcfg );
-      QgsMessageLog::logMessage( msg, AUTH_METHOD_KEY, QgsMessageLog::INFO );
-      break;
-    case QgsAuthOAuth2Config::Form:
-      // FIXME: what to do here if the parent request is not POST?
-      //        probably have to skip this until auth system support is moved into QgsNetworkAccessManager
-      msg = QStringLiteral( "Update request FAILED for authcfg %1: form POST token update is unsupported" ).arg( authcfg );
-      QgsMessageLog::logMessage( msg, AUTH_METHOD_KEY, QgsMessageLog::WARNING );
-      break;
-    case QgsAuthOAuth2Config::Query:
+  case QgsAuthOAuth2Config::Header:
+    request.setRawHeader( O2_HTTP_AUTHORIZATION_HEADER, QStringLiteral( "Bearer %1" ).arg( o2->token() ).toAscii() );
+    msg = QStringLiteral( "Updated request HEADER with access token for authcfg: %1" ).arg( authcfg );
+    QgsMessageLog::logMessage( msg, AUTH_METHOD_KEY, QgsMessageLog::INFO );
+    break;
+  case QgsAuthOAuth2Config::Form:
+    // FIXME: what to do here if the parent request is not POST?
+    //        probably have to skip this until auth system support is moved into QgsNetworkAccessManager
+    msg = QStringLiteral( "Update request FAILED for authcfg %1: form POST token update is unsupported" ).arg( authcfg );
+    QgsMessageLog::logMessage( msg, AUTH_METHOD_KEY, QgsMessageLog::WARNING );
+    break;
+  case QgsAuthOAuth2Config::Query:
 #if QT_VERSION < QT_VERSION_CHECK( 5, 0, 0 )
-      if ( !url.hasQueryItem( O2_OAUTH2_ACCESS_TOKEN ) )
-      {
-        url.addQueryItem( O2_OAUTH2_ACCESS_TOKEN, o2->token() );
+    if ( !url.hasQueryItem( O2_OAUTH2_ACCESS_TOKEN ) )
+    {
+      url.addQueryItem( O2_OAUTH2_ACCESS_TOKEN, o2->token() );
 #else
-      if ( !query.hasQueryItem( O2_OAUTH2_ACCESS_TOKEN ) )
-      {
-        query.addQueryItem( O2_OAUTH2_ACCESS_TOKEN, o2->token() );
-        url.setQuery( query );
+    if ( !query.hasQueryItem( O2_OAUTH2_ACCESS_TOKEN ) )
+    {
+      query.addQueryItem( O2_OAUTH2_ACCESS_TOKEN, o2->token() );
+      url.setQuery( query );
 #endif
-        request.setUrl( url );
-        msg = QStringLiteral( "Updated request QUERY with access token for authcfg: %1" ).arg( authcfg );
-      }
-      else
-      {
-        msg = QStringLiteral( "Updated request QUERY with access token SKIPPED (existing token) for authcfg: %1" ).arg( authcfg );
-      }
-      QgsMessageLog::logMessage( msg, AUTH_METHOD_KEY, QgsMessageLog::INFO );
-      break;
+      request.setUrl( url );
+      msg = QStringLiteral( "Updated request QUERY with access token for authcfg: %1" ).arg( authcfg );
+    }
+    else
+    {
+      msg = QStringLiteral( "Updated request QUERY with access token SKIPPED (existing token) for authcfg: %1" ).arg( authcfg );
+    }
+    QgsMessageLog::logMessage( msg, AUTH_METHOD_KEY, QgsMessageLog::INFO );
+    break;
   }
 
   return true;
@@ -307,30 +307,30 @@ bool QgsAuthOAuth2Method::updateNetworkReply( QNetworkReply *reply, const QStrin
 {
   Q_UNUSED( dataprovider )
 
-  // TODO: handle token refresh error on the reply, see O2Requestor::onRequestError()
-  // Is this doable if the errors are also handled in qgsapp (and/or elsewhere)?
-  // Can we block as long as needed if the reply gets deleted elsewhere,
-  // or will a local loop's connection keep it alive after a call to deletelater()?
+    // TODO: handle token refresh error on the reply, see O2Requestor::onRequestError()
+    // Is this doable if the errors are also handled in qgsapp (and/or elsewhere)?
+    // Can we block as long as needed if the reply gets deleted elsewhere,
+    // or will a local loop's connection keep it alive after a call to deletelater()?
 
-  if ( !reply )
-  {
-    QString msg = QStringLiteral( "Updated reply with token refresh connection FAILED"
-                                  " for authcfg %1: null reply object" ).arg( authcfg );
-    QgsMessageLog::logMessage( msg, AUTH_METHOD_KEY, QgsMessageLog::WARNING );
-    return false;
-  }
-  reply->setProperty( "authcfg", authcfg );
+    if ( !reply )
+    {
+      QString msg = QStringLiteral( "Updated reply with token refresh connection FAILED"
+        " for authcfg %1: null reply object" ).arg( authcfg );
+      QgsMessageLog::logMessage( msg, AUTH_METHOD_KEY, QgsMessageLog::WARNING );
+      return false;
+    }
+    reply->setProperty( "authcfg", authcfg );
 
-  // converting this to new-style Qt5 connection causes odd linking error with static o2 library
-  connect( reply, SIGNAL( error( QNetworkReply::NetworkError ) ),
-           this, SLOT( onNetworkError( QNetworkReply::NetworkError ) ), Qt::QueuedConnection );
-  //connect( reply, static_cast<void ( QNetworkReply::* )( QNetworkReply::NetworkError )>( &QNetworkReply::error ),
-  //         this, &QgsAuthOAuth2Method::onNetworkError, Qt::QueuedConnection );
+    // converting this to new-style Qt5 connection causes odd linking error with static o2 library
+    connect( reply, SIGNAL( error( QNetworkReply::NetworkError ) ),
+      this, SLOT( onNetworkError( QNetworkReply::NetworkError ) ), Qt::QueuedConnection );
+    //connect( reply, static_cast<void ( QNetworkReply::* )( QNetworkReply::NetworkError )>( &QNetworkReply::error ),
+    //         this, &QgsAuthOAuth2Method::onNetworkError, Qt::QueuedConnection );
 
-  QString msg = QStringLiteral( "Updated reply with token refresh connection for authcfg: %1" ).arg( authcfg );
-  QgsMessageLog::logMessage( msg, AUTH_METHOD_KEY, QgsMessageLog::INFO );
+    QString msg = QStringLiteral( "Updated reply with token refresh connection for authcfg: %1" ).arg( authcfg );
+    QgsMessageLog::logMessage( msg, AUTH_METHOD_KEY, QgsMessageLog::INFO );
 
-  return true;
+    return true;
 }
 
 void QgsAuthOAuth2Method::onAuthCode()
@@ -362,14 +362,14 @@ void QgsAuthOAuth2Method::onLinkingSucceeded()
   if ( !o2 )
   {
     QgsMessageLog::logMessage( tr( "Linking succeeded, but authenticator access FAILED: null object" ),
-                               AUTH_METHOD_KEY, QgsMessageLog::WARNING );
+      AUTH_METHOD_KEY, QgsMessageLog::WARNING );
     return;
   }
 
   if ( !o2->linked() )
   {
     QgsMessageLog::logMessage( tr( "Linking apparently succeeded, but authenticator FAILED to verify it is linked" ),
-                               AUTH_METHOD_KEY, QgsMessageLog::WARNING );
+      AUTH_METHOD_KEY, QgsMessageLog::WARNING );
     return;
   }
 
@@ -430,7 +430,7 @@ void QgsAuthOAuth2Method::onReplyFinished()
   QgsMessageLog::logMessage( tr( "Network reply finished" ), AUTH_METHOD_KEY, QgsMessageLog::INFO );
   QNetworkReply *reply = qobject_cast<QNetworkReply *>( sender() );
   QgsMessageLog::logMessage( tr( "Results: %1" ).arg( QString( reply->readAll() ) ),
-                             AUTH_METHOD_KEY, QgsMessageLog::INFO );
+    AUTH_METHOD_KEY, QgsMessageLog::INFO );
 }
 
 void QgsAuthOAuth2Method::onNetworkError( QNetworkReply::NetworkError err )
@@ -453,7 +453,7 @@ void QgsAuthOAuth2Method::onNetworkError( QNetworkReply::NetworkError err )
 
   int status = reply->attribute( QNetworkRequest::HttpStatusCodeAttribute ).toInt();
   msg = tr( "Network error, HTTP status: %1" ).arg(
-          reply->attribute( QNetworkRequest::HttpReasonPhraseAttribute ).toString() );
+    reply->attribute( QNetworkRequest::HttpReasonPhraseAttribute ).toString() );
   QgsMessageLog::logMessage( msg, AUTH_METHOD_KEY, QgsMessageLog::INFO );
 
   if ( status == 401 )
@@ -495,18 +495,18 @@ void QgsAuthOAuth2Method::onRefreshFinished( QNetworkReply::NetworkError err )
   if ( err != QNetworkReply::NoError )
   {
     QgsMessageLog::logMessage( tr( "Token fefresh error: %1" ).arg( reply->errorString() ),
-                               AUTH_METHOD_KEY, QgsMessageLog::WARNING );
+      AUTH_METHOD_KEY, QgsMessageLog::WARNING );
   }
 }
 
 bool QgsAuthOAuth2Method::updateDataSourceUriItems( QStringList &connectionItems, const QString &authcfg,
-    const QString &dataprovider )
+  const QString &dataprovider )
 {
   Q_UNUSED( connectionItems )
-  Q_UNUSED( authcfg )
-  Q_UNUSED( dataprovider )
+    Q_UNUSED( authcfg )
+    Q_UNUSED( dataprovider )
 
-  return true;
+    return true;
 }
 
 void QgsAuthOAuth2Method::updateMethodConfig( QgsAuthMethodConfig &mconfig )
@@ -639,7 +639,7 @@ QgsO2 *QgsAuthOAuth2Method::getOAuth2Bundle( const QString &authcfg, bool fullco
   // TODO: instantiate particular QgsO2 subclassed authenticators relative to config ???
 
   QgsDebugMsg( QStringLiteral( "Loading authenticator object with %1 flow properties of OAuth2 config: %2" )
-               .arg( QgsAuthOAuth2Config::grantFlowString( config->grantFlow() ), authcfg ) );
+    .arg( QgsAuthOAuth2Config::grantFlowString( config->grantFlow() ), authcfg ) );
 
   QgsO2 *o2 = new QgsO2( authcfg, config, qApp, QgsNetworkAccessManager::instance() );
 
@@ -671,48 +671,48 @@ void QgsAuthOAuth2Method::removeOAuth2Bundle( const QString &authcfg )
 //////////////////////////////////////////////
 
 /**
- * Required class factory to return a pointer to a newly created object
- */
+* Required class factory to return a pointer to a newly created object
+*/
 QGISEXTERN QgsAuthOAuth2Method *classFactory()
 {
   return new QgsAuthOAuth2Method();
 }
 
 /** Required key function (used to map the plugin to a data store type)
- */
+*/
 QGISEXTERN QString authMethodKey()
 {
   return AUTH_METHOD_KEY;
 }
 
 /**
- * Required description function
- */
+* Required description function
+*/
 QGISEXTERN QString description()
 {
   return AUTH_METHOD_DESCRIPTION;
 }
 
 /**
- * Required isAuthMethod function. Used to determine if this shared library
- * is an authentication method plugin
- */
+* Required isAuthMethod function. Used to determine if this shared library
+* is an authentication method plugin
+*/
 QGISEXTERN bool isAuthMethod()
 {
   return true;
 }
 
 /**
- * Optional class factory to return a pointer to a newly created edit widget
- */
+* Optional class factory to return a pointer to a newly created edit widget
+*/
 QGISEXTERN QgsAuthOAuth2Edit *editWidget( QWidget *parent )
 {
   return new QgsAuthOAuth2Edit( parent );
 }
 
 /**
- * Required cleanup function
- */
+* Required cleanup function
+*/
 QGISEXTERN void cleanupAuthMethod() // pass QgsAuthMethod *method, then delete method  ?
 {
 }

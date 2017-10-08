@@ -300,7 +300,7 @@ void QgsO2::onVerificationReceived(const QMap<QString, QString> response)
 
   if (grantFlow_ == GrantFlowAuthorizationCode)
   {
-    
+
     // Exchange access code for access/refresh tokens
     QString query;
     if(!apiKey_.isEmpty())
