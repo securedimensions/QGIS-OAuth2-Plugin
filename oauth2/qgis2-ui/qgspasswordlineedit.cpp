@@ -5,7 +5,6 @@ begin                : August 03, 2016
 copyright            : (C) 2016 by Boundless Spatial, Inc. USA
 author               : Larry Shaffer
 email                : lshaffer at boundlessgeo dot com
-
 based on             : QgsFilterLineEdit by Alex Bruy
 ***************************************************************************/
 
