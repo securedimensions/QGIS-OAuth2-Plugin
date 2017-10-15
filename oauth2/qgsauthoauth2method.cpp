@@ -1,8 +1,10 @@
 /***************************************************************************
-    begin                : July 13, 2016
-    copyright            : (C) 2016 by Monsanto Company, USA
+    begin                : October 15, 2017
+    copyright            : (C) 2017 by Secure Dimensions GmbH, Germany
     author               : Larry Shaffer, Boundless Spatial
     email                : lshaffer at boundlessgeo dot com
+    author               : Andreas Matheus, Secure Dimensions GmbH
+    email                : am at secure-dimensions dot de
  ***************************************************************************
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *

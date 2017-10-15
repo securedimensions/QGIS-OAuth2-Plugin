@@ -1,10 +1,12 @@
 /***************************************************************************
                               qgspasswordineedit.cpp
                               ------------------------
-  begin                : August 03, 2016
-  copyright            : (C) 2016 by Boundless Spatial, Inc. USA
-  author               : Larry Shaffer
-  email                : lshaffer at boundlessgeo dot com
+    begin                : October 15, 2017
+    copyright            : (C) 2017 by Secure Dimensions GmbH, Germany
+    author               : Larry Shaffer, Boundless Spatial
+    email                : lshaffer at boundlessgeo dot com
+    author               : Andreas Matheus, Secure Dimensions GmbH
+    email                : am at secure-dimensions dot de
 
   based on             : QgsFilterLineEdit by Alex Bruy
  ***************************************************************************/
